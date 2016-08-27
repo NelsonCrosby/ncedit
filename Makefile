@@ -8,7 +8,7 @@ default: ncedit
 .PHONY: default
 
 $(OBJ:%=%.o): %.o: %.c
-	cc $(_CFLAGS) `pkg-config --cflags ncurses` -MMD -c $< -o $@
+	cc $(_CFLAGS) `pkg-config --cflags ncurses lua5.2` -MMD -c $< -o $@
 
 $(OUT): $(OBJ:%=%.o)
-	cc $(_LDFLAGS) $^ -o $@ `pkg-config --libs ncurses`
+	cc $(_LDFLAGS) $^ -o $@ `pkg-config --libs ncurses lua5.2`

@@ -24,8 +24,38 @@
 
 #include <stdio.h>
 
-int main() {
-    printf("Hello, World!\n");
-    
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+
+
+int main(int argc, char** argv) {
+
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+
+    if (luaL_loadfile(L, "lua/main.lua")) {
+        printf("cannot load main.lua: %s\n", lua_tostring(L, -1));
+        lua_close(L);
+        return 1;
+    }
+
+    lua_createtable(L, argc - 1, 1);
+    lua_pushstring(L, "argv0");
+    lua_pushstring(L, argv[0]);
+    lua_settable(L, -3);
+    for (int i = 0; i < argc; i += 1) {
+        lua_pushnumber(L, (lua_Number) i);
+        lua_pushstring(L, argv[i]);
+        lua_settable(L, -3);
+    }
+
+    if (lua_pcall(L, 1, 1, 0)) {
+        printf("error running main.lua: %s\n", lua_tostring(L, -1));
+        lua_close(L);
+        return 1;
+    }
+
+    lua_close(L);
     return 0;
 }
