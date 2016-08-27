@@ -29,13 +29,13 @@
 #include <lualib.h>
 
 
-int main(int argc, char** argv) {
-
+int main(int argc, char** argv)
+{
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
     if (luaL_loadfile(L, "lua/main.lua")) {
-        printf("cannot load main.lua: %s\n", lua_tostring(L, -1));
+        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;
     }
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     }
 
     if (lua_pcall(L, 1, 1, 0)) {
-        printf("error running main.lua: %s\n", lua_tostring(L, -1));
+        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;
     }

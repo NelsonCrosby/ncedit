@@ -1,14 +1,23 @@
 OUT = ncedit
 OBJ = ncedit
 
-_CFLAGS += -std=c99
-_LDFLAGS +=
+_CFLAGS = -std=c99 -MMD
+_LDFLAGS =
+_LDLIBS =
+PKG += ncurses lua5.2
 
-default: ncedit
-.PHONY: default
+_CFLAGS += `pkg-config --cflags $(PKG)`
+_LDLIBS += `pkg-config --libs $(PKG)`
 
-$(OBJ:%=%.o): %.o: %.c
-	cc $(_CFLAGS) `pkg-config --cflags ncurses lua5.2` -MMD -c $< -o $@
+CFLAGS := $(_CFLAGS) $(CFLAGS)
+LDFLAGS := $(_LDFLAGS) $(LDFLAGS)
+LDLIBS := $(_LDLIBS) $(LDLIBS)
 
-$(OUT): $(OBJ:%=%.o)
-	cc $(_LDFLAGS) $^ -o $@ `pkg-config --libs ncurses lua5.2`
+default: $(OUT)
+clean:
+	rm $(OUT) $(OBJ:=.o) $(OBJ:=.d)
+.PHONY: default clean
+
+$(OUT): $(OBJ:=.o)
+
+-include $(OBJ:=.d)
