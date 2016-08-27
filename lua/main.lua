@@ -1,19 +1,17 @@
-local argv = ...
+
+-- Not required, but entirely valid
+local new = require('class')
+
+test = new(Test, 1)
+test:hello()
 
 
-local f = io.open(argv[1], 'r')
+Test2 = new.class(Test)
 
-local lines = {}
-for l in f:lines() do
-    table.insert(lines, l)
+function Test2:goodbye()
+    self:hello()
+    print('Goodbye!')
 end
 
-
-for i, v in ipairs(lines) do
-    print(i, v)
-end
-
-
-
-
-f:close()
+test2 = new(Test2, 2)
+test2:goodbye()

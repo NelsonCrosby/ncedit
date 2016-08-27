@@ -28,13 +28,47 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+#include "lapi/lapi.h"
+#include "classtest.h"
+
+
+// Function for getting error stack trace
+static int traceback (lua_State *L) {
+    if (!lua_isstring(L, 1))  /* 'message' not a string? */
+        return 1;  /* keep it intact */
+    lua_getglobal(L, "debug");
+    if (!lua_istable(L, -1)) {
+        lua_pop(L, 1);
+        return 1;
+    }
+    lua_getfield(L, -1, "traceback");
+    if (!lua_isfunction(L, -1)) {
+        lua_pop(L, 2);
+        return 1;
+    }
+    lua_pushvalue(L, 1);  /* pass error message */
+    lua_pushinteger(L, 2);  /* skip this function and traceback */
+    lua_call(L, 2, 1);  /* call debug.traceback */
+    return 1;
+}
+
 
 int main(int argc, char** argv)
 {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
+    lapi_load(L);
+
+    lua_pushcfunction(L, traceback);
 
     if (luaL_loadfile(L, "lua/main.lua")) {
+        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
+        lua_close(L);
+        return 1;
+    }
+
+    lua_pushcfunction(L, create_test_class);
+    if (lua_pcall(L, 0, 0, -2)) {
         printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;
@@ -50,7 +84,14 @@ int main(int argc, char** argv)
         lua_settable(L, -3);
     }
 
-    if (lua_pcall(L, 1, 1, 0)) {
+    if (lua_pcall(L, 1, 1, -3)) {
+        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
+        lua_close(L);
+        return 1;
+    }
+
+    lua_pushcfunction(L, run_test);
+    if (lua_pcall(L, 0, 0, -3)) {
         printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;

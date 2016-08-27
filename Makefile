@@ -1,5 +1,6 @@
 OUT = ncedit
-OBJ = ncedit
+OBJ = ncedit classtest
+OBJ += lapi/lapi lapi/class
 
 _CFLAGS = -std=c99 -MMD
 _LDFLAGS =
