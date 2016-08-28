@@ -1,6 +1,6 @@
 OUT = ncedit
 OBJ = ncedit
-OBJ += lapi/lapi lapi/class
+OBJ += lapi/lapi lapi/class lapi/screen
 
 _CFLAGS = -std=c99 -MMD
 _LDFLAGS =
