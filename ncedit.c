@@ -29,7 +29,6 @@
 #include <lualib.h>
 
 #include "lapi/lapi.h"
-#include "classtest.h"
 
 
 // Function for getting error stack trace
@@ -67,17 +66,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    lua_pushcfunction(L, create_test_class);
-    if (lua_pcall(L, 0, 0, -2)) {
-        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
-        lua_close(L);
-        return 1;
-    }
-
     lua_createtable(L, argc - 1, 1);
-    lua_pushstring(L, "argv0");
-    lua_pushstring(L, argv[0]);
-    lua_settable(L, -3);
     for (int i = 0; i < argc; i += 1) {
         lua_pushnumber(L, (lua_Number) i);
         lua_pushstring(L, argv[i]);
@@ -85,13 +74,6 @@ int main(int argc, char** argv)
     }
 
     if (lua_pcall(L, 1, 1, -3)) {
-        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
-        lua_close(L);
-        return 1;
-    }
-
-    lua_pushcfunction(L, run_test);
-    if (lua_pcall(L, 0, 0, -3)) {
         printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;
