@@ -58,23 +58,30 @@ int main(int argc, char** argv)
     luaL_openlibs(L);
     lapi_load(L);
 
+    // Lua error message parser
     lua_pushcfunction(L, traceback);
 
+    // Load main lua script
     if (luaL_loadfile(L, "lua/main.lua")) {
         printf("%s: %s\n", argv[0], lua_tostring(L, -1));
         lua_close(L);
         return 1;
     }
-
-    lua_createtable(L, argc - 1, 1);
-    for (int i = 0; i < argc; i += 1) {
-        lua_pushnumber(L, (lua_Number) i);
-        lua_pushstring(L, argv[i]);
-        lua_settable(L, -3);
+    // Evaluate main.lua to get program lifecycle function
+    if (lua_pcall(L, 0, 1, -2)) {
+        printf("%s\n", lua_tostring(L, -1));
+        lua_close(L);
+        return 1;
     }
 
-    if (lua_pcall(L, 1, 1, -3)) {
-        printf("%s: %s\n", argv[0], lua_tostring(L, -1));
+    // Start program lifecycle
+    // Load argv as initial args
+    for (int i = 0; i < argc; i += 1) {
+        lua_pushstring(L, argv[i]);
+    }
+    // Call lifecycle handler (which was returned by main.lua)
+    if (lua_pcall(L, argc, 0, -(argc + 1))) {
+        printf("%s\n", lua_tostring(L, -1));
         lua_close(L);
         return 1;
     }
