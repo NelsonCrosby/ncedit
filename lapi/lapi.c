@@ -22,48 +22,38 @@
  *************************************/
 
 #include <lua.h>
+#include <lauxlib.h>
 
 #include "lapi.h"
 #include "class.h"
 
 
-// Utility to create Lua modules that can be loaded by require
-static void create_module(lua_State *L,
-    const char *name, lua_CFunction loader);
-
 // Loader for lapi class module
-static int ldmod_class(lua_State *L);
+static int load_class(lua_State *L);
 
+
+static luaL_Reg modules[] = {
+    {"class", load_class},
+    {NULL, NULL}
+};
 
 // Function to set up lapi
 int lapi_load(lua_State *L)
 {
-    // Create class module
-    create_module(L, "class", ldmod_class);
+    // Load modules into package.preload
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "preload");
+    luaL_setfuncs(L, modules, 0);
+    // Pop package and package.preload
+    lua_pop(L, 2);
 
     // Load class module into globals
     lua_getglobal(L, "require");
     lua_pushstring(L, "class");
     lua_call(L, 1, 1);
     lua_setglobal(L, "new");
-    // Pop require function
-    lua_pop(L, 1);
 
     return 0;
-}
-
-
-static void create_module(lua_State *L,
-    const char *name, lua_CFunction loader)
-{
-    // Get package.preload
-    lua_getglobal(L, "package");
-    lua_getfield(L, -1, "preload");
-    // Set function as preloader
-    lua_pushcfunction(L, loader);
-    lua_setfield(L, -2, name);
-    // Pop package.preload then package
-    lua_pop(L, 2);
 }
 
 
@@ -74,8 +64,8 @@ static int lapi_class_new_call(lua_State *L)
     return lapi_class_new(L);
 }
 
-// Load lapi class
-static int ldmod_class(lua_State *L)
+// Load lapi class module
+static int load_class(lua_State *L)
 {
     // Create table and set new.class
     lua_createtable(L, 0, 1);       // Create new

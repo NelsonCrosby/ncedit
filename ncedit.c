@@ -32,29 +32,19 @@
 
 
 // Function for getting error stack trace
-static int traceback (lua_State *L) {
-    if (!lua_isstring(L, 1))  /* 'message' not a string? */
-        return 1;  /* keep it intact */
-    lua_getglobal(L, "debug");
-    if (!lua_istable(L, -1)) {
-        lua_pop(L, 1);
+static int traceback(lua_State *L) {
+    // Only get traceback if message is a string
+    if (!lua_isstring(L, 1))
         return 1;
-    }
-    lua_getfield(L, -1, "traceback");
-    if (!lua_isfunction(L, -1)) {
-        lua_pop(L, 2);
-        return 1;
-    }
-    lua_pushvalue(L, 1);  /* pass error message */
-    lua_pushinteger(L, 2);  /* skip this function and traceback */
-    lua_call(L, 2, 1);  /* call debug.traceback */
+    // Get stack trace for L
+    luaL_traceback(L, L, lua_tostring(L, -1), 1);
     return 1;
 }
 
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    lua_State* L = luaL_newstate();
+    lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     lapi_load(L);
 
@@ -80,7 +70,7 @@ int main(int argc, char** argv)
         lua_pushstring(L, argv[i]);
     }
     // Call lifecycle handler (which was returned by main.lua)
-    if (lua_pcall(L, argc, 0, -(argc + 1))) {
+    if (lua_pcall(L, argc, 0, -(argc + 2))) {
         printf("%s\n", lua_tostring(L, -1));
         lua_close(L);
         return 1;

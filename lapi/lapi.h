@@ -26,7 +26,7 @@
 #include <lua.h>
 
 
-/**
+/** [-0, +0, -]
  * Load the lapi functions into their correct
  * locations in the lua_State.
  */

@@ -28,12 +28,6 @@
 #include "class.h"
 
 
-static int empty_init_function(lua_State *L)
-{
-    return 0;
-}
-
-
 int lapi_class_new(lua_State *L)
 {
     // Get number of args for init

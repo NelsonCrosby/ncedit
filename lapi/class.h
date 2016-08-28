@@ -64,7 +64,7 @@ void create_inst(lua_State *L, int cargs);
 
 /** [-nargs, +nresults, e]
  * Calls a method mname on the object at stack index idx,
- *  using using nargs from the stack and resulting in
+ *  using nargs from the stack and resulting in
  *  nresults.
  */
 void call_method(lua_State *L,
