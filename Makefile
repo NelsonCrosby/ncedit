@@ -2,7 +2,7 @@ OUT = ncedit
 OBJ = ncedit
 OBJ += lapi/lapi lapi/class lapi/screen
 
-_CFLAGS = -std=c99 -MMD
+_CFLAGS = -std=c99 -MMD -Wall
 _LDFLAGS =
 _LDLIBS =
 PKG += ncurses lua5.2

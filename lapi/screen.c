@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  *************************************/
 
+#include <signal.h>
 #include <stdbool.h>
 
 #include <lua.h>
@@ -52,6 +53,7 @@ static int Screen_init(lua_State *L)
 
     initialized = true;
     initscr();
+    nodelay(stdscr, true);
     // TODO: more init based on passed settings.
 
     return 0;
@@ -68,10 +70,22 @@ static int Screen_close(lua_State *L)
 
 static int Screen_hello(lua_State *L)
 {
-    printw(luaL_checkstring(L, 2));
-    refresh();
-    getch();
-    return 0;
+    int ctx;
+    switch (lua_getctx(L, &ctx)) {
+
+    case LUA_OK:
+        printw(luaL_checkstring(L, 2));
+        refresh();
+    case LUA_YIELD:
+        if (getch() == ERR) {
+            return lua_yieldk(L, 0, ctx, Screen_hello);
+        }
+        return lua_yield(L, 0);
+
+    default:    // Shouldn't ever happen
+        raise(SIGABRT);
+        return 0;
+    }
 }
 
 
