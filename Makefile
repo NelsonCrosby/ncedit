@@ -5,7 +5,13 @@ OBJ += lapi/lapi lapi/class lapi/screen
 _CFLAGS = -std=c99 -MMD -Wall
 _LDFLAGS =
 _LDLIBS =
-PKG += ncurses lua5.2
+
+_PKG_LUA = lua5.2
+ifeq ($(shell pkg-config --exists $(_PKG_LUA) &>/dev/null ; echo $$?),1)
+ _PKG_LUA = lua
+endif
+
+PKG += ncurses $(_PKG_LUA)
 
 _CFLAGS += `pkg-config --cflags $(PKG)`
 _LDLIBS += `pkg-config --libs $(PKG)`

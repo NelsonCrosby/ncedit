@@ -44,7 +44,6 @@ static bool initialized = false;
 
 static int Screen_init(lua_State *L)
 {
-
     if (initialized) {
         // Avoid creating multiple ncurses screens
         //  (what would that even do?)
@@ -91,8 +90,7 @@ static int Screen_hello(lua_State *L)
 
 static int Screen_gc(lua_State *L)
 {
-    Screen_close(L);
-    return 0;
+    return Screen_close(L);
 }
 
 

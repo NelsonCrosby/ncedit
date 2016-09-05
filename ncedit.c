@@ -32,7 +32,8 @@
 
 
 // Function for getting error stack trace
-static int traceback(lua_State *L) {
+static int errmsgh(lua_State *L)
+{
     // Only get traceback if message is a string
     if (!lua_isstring(L, 1))
         return 1;
@@ -49,7 +50,7 @@ int main(int argc, char **argv)
     lapi_load(L);
 
     // Lua error message parser
-    lua_pushcfunction(L, traceback);
+    lua_pushcfunction(L, errmsgh);
 
     // Load main lua script
     if (luaL_loadfile(L, "lua/main.lua")) {

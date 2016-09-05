@@ -23,6 +23,16 @@
 
 #pragma once
 
+#include <lua.h>
+
+
+/** require('class')
+ * Loader function for the 'class' module.
+ * Use by calling require('class') from Lua.
+ * Returns the new function for creating instances,
+ * and the new.class function for creating classes.
+ */
+int lapi_load_class(lua_State *L);
 
 /** new(class, ...)
  * Creates a new instance of a class,
